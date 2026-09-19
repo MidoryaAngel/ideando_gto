@@ -230,6 +230,7 @@
 
       input[type="text"],
       input[type="email"],
+      input[type="password"],
       input[type="tel"],
       select {
         width: 100%;
@@ -471,23 +472,43 @@
       <div class="right-column">
         <div class="registro-header">Panel de Postulación</div>
 
-        <!-- PANTALLA 1: BIENVENIDA E IDENTIFICACIÓN -->
+        <!-- PANTALLA 1: BIENVENIDA E IDENTIFICACIÓN / LOGIN -->
         <section id="screen-1" class="card active">
-          <h2 style="text-align: center">
-            Paso 1: Identificación del Solicitante
-          </h2>
-          <p
-            style="
-              text-align: center;
-              color: var(--text-muted);
-              font-size: 0.9rem;
-              margin-bottom: 2rem;
-            "
-          >
-            Ingresa la información básica para aperturar tu expediente.
-          </p>
+          <!-- PESTAÑAS DE REGISTRO / LOGIN -->
+          <div class="view-toggle" style="margin-bottom: 2rem">
+            <button
+              type="button"
+              class="view-btn active"
+              id="tab-btn-register"
+              onclick="switchAuthTab('register')"
+            >
+              Nuevo Registro
+            </button>
+            <button
+              type="button"
+              class="view-btn"
+              id="tab-btn-login"
+              onclick="switchAuthTab('login')"
+            >
+              Ya tengo un Folio (Login)
+            </button>
+          </div>
 
+          <!-- FORMULARIO 1: REGISTRO NUEVO -->
           <form id="form-auth" onsubmit="handleAuthSubmit(event)">
+            <h2 style="text-align: center">
+              Paso 1: Identificación del Solicitante
+            </h2>
+            <p
+              style="
+                text-align: center;
+                color: var(--text-muted);
+                font-size: 0.9rem;
+                margin-bottom: 2rem;
+              "
+            >
+              Ingresa la información básica para aperturar tu expediente.
+            </p>
             <div class="form-group">
               <label>Nombre Completo del Emprendedor *</label>
               <input
@@ -530,6 +551,43 @@
             <div style="margin-top: 2rem">
               <button type="submit" class="btn btn-primary">
                 Guardar y Continuar al Paso 2 &rarr;
+              </button>
+            </div>
+          </form>
+
+          <!-- FORMULARIO 2: LOGIN DE EMPRENDEDOR -->
+          <form
+            id="form-login"
+            onsubmit="handleLoginSubmit(event)"
+            style="display: none"
+          >
+            <h2 style="text-align: center">Consultar Estatus</h2>
+            <p
+              style="
+                text-align: center;
+                color: var(--text-muted);
+                font-size: 0.9rem;
+                margin-bottom: 2rem;
+              "
+            >
+              Ingresa para ver el dictamen de tu proyecto.
+            </p>
+            <div class="form-group">
+              <label>Folio de Seguimiento *</label>
+              <input
+                type="text"
+                id="login-folio"
+                required
+                placeholder="Ej. IDEANDO-26-XXXX"
+              />
+              <span class="helper-text"
+                >Ingresa el código que te asignó el sistema al
+                registrarte.</span
+              >
+            </div>
+            <div style="margin-top: 2rem">
+              <button type="submit" class="btn btn-primary">
+                Ingresar al Panel &rarr;
               </button>
             </div>
           </form>
@@ -697,85 +755,130 @@
             </div>
 
             <button class="btn btn-secondary" onclick="restartDemo()">
-              Comenzar Nueva Postulación
+              Cerrar Sesión / Nuevo Registro
             </button>
           </div>
 
           <!-- VISTA COMITÉ -->
           <div id="view-committee" class="view-panel">
-            <h2>Ficha Técnica del Evaluador</h2>
-            <p
-              style="
-                color: var(--text-muted);
-                font-size: 0.85rem;
-                margin-bottom: 1rem;
-              "
-            >
-              Resumen estructurado para la toma de decisiones presupuestales.
-            </p>
-
-            <ul class="summary-list">
-              <li>
-                <span>Folio Asignado:</span> <strong id="sum-folio">-</strong>
-              </li>
-              <li>
-                <span>Proyecto a Evaluar:</span>
-                <strong id="sum-project">-</strong>
-              </li>
-              <li>
-                <span>Solicitante:</span> <strong id="sum-lead">-</strong>
-              </li>
-              <li>
-                <span>Municipio / Operación:</span>
-                <strong id="sum-city">-</strong>
-              </li>
-              <li>
-                <span>Puntaje Algorítmico:</span>
-                <strong id="sum-score">-</strong>
-              </li>
-              <li>
-                <span>Sugerencia del Sistema:</span>
-                <strong id="sum-recommendation">-</strong>
-              </li>
-            </ul>
-
+            <!-- CAJA DE LOGIN DEL COMITÉ (Se muestra al cambiar a esta vista) -->
             <div
+              id="committee-login-box"
               style="
-                margin-top: 2rem;
+                text-align: center;
+                max-width: 400px;
+                margin: 0 auto;
+                padding: 2rem;
+                border: 1px solid #cbd5e1;
+                border-radius: 12px;
                 background: #f8fafc;
-                padding: 1rem;
-                border-radius: 8px;
-                border-left: 4px solid var(--gto-dark);
               "
             >
-              <label
+              <h3 style="color: var(--gto-dark); margin-bottom: 1rem">
+                Acceso Restringido
+              </h3>
+              <p
                 style="
-                  display: block;
-                  text-align: left;
-                  font-weight: bold;
-                  margin-bottom: 10px;
+                  font-size: 0.85rem;
+                  color: var(--text-muted);
+                  margin-bottom: 1.5rem;
                 "
-                >Resolución Final del Funcionario (Comité):</label
               >
-              <div class="committee-actions-buttons">
-                <button
-                  class="btn btn-success"
-                  onclick="recordCommitteeDecision('Aprobado')"
+                Ingrese sus credenciales de evaluador para ver el dictamen.
+              </p>
+              <div class="form-group" style="text-align: left">
+                <label>Clave de Funcionario *</label>
+                <input
+                  type="password"
+                  id="committee-password"
+                  placeholder="Ingrese cualquier clave para probar"
+                />
+              </div>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="doCommitteeLogin()"
+              >
+                Iniciar Sesión
+              </button>
+            </div>
+
+            <!-- DASHBOARD DEL COMITÉ (Se oculta hasta hacer login) -->
+            <div id="committee-dashboard" style="display: none">
+              <h2>Ficha Técnica del Evaluador</h2>
+              <p
+                style="
+                  color: var(--text-muted);
+                  font-size: 0.85rem;
+                  margin-bottom: 1rem;
+                "
+              >
+                Resumen estructurado para la toma de decisiones presupuestales.
+              </p>
+
+              <ul class="summary-list">
+                <li>
+                  <span>Folio Asignado:</span> <strong id="sum-folio">-</strong>
+                </li>
+                <li>
+                  <span>Proyecto a Evaluar:</span>
+                  <strong id="sum-project">-</strong>
+                </li>
+                <li>
+                  <span>Solicitante:</span> <strong id="sum-lead">-</strong>
+                </li>
+                <li>
+                  <span>Municipio / Operación:</span>
+                  <strong id="sum-city">-</strong>
+                </li>
+                <li>
+                  <span>Puntaje Algorítmico:</span>
+                  <strong id="sum-score">-</strong>
+                </li>
+                <li>
+                  <span>Sugerencia del Sistema:</span>
+                  <strong id="sum-recommendation">-</strong>
+                </li>
+              </ul>
+
+              <div
+                style="
+                  margin-top: 2rem;
+                  background: #f8fafc;
+                  padding: 1rem;
+                  border-radius: 8px;
+                  border-left: 4px solid var(--gto-dark);
+                "
+              >
+                <label
+                  style="
+                    display: block;
+                    text-align: left;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                  "
+                  >Resolución Final del Funcionario (Comité):</label
                 >
-                  Aprobar Fondos
-                </button>
-                <button
-                  class="btn btn-warning"
-                  onclick="recordCommitteeDecision('En Espera')"
-                >
-                  Revisión Técnica
-                </button>
-                <button
-                  class="btn btn-danger"
-                  onclick="recordCommitteeDecision('Rechazado')"
-                >
-                  Rechazar
-                </button>
+                <div class="committee-actions-buttons">
+                  <button
+                    class="btn btn-success"
+                    onclick="recordCommitteeDecision('Aprobado')"
+                  >
+                    Aprobar Fondos
+                  </button>
+                  <button
+                    class="btn btn-warning"
+                    onclick="recordCommitteeDecision('En Espera')"
+                  >
+                    Revisión Técnica
+                  </button>
+                  <button
+                    class="btn btn-danger"
+                    onclick="recordCommitteeDecision('Rechazado')"
+                  >
+                    Rechazar
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -853,9 +956,44 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
+      // Función para alternar entre Registro y Login en Pantalla 1
+      function switchAuthTab(tab) {
+        if (tab === "register") {
+          document.getElementById("form-auth").style.display = "block";
+          document.getElementById("form-login").style.display = "none";
+          document.getElementById("tab-btn-register").classList.add("active");
+          document.getElementById("tab-btn-login").classList.remove("active");
+        } else {
+          document.getElementById("form-auth").style.display = "none";
+          document.getElementById("form-login").style.display = "block";
+          document
+            .getElementById("tab-btn-register")
+            .classList.remove("active");
+          document.getElementById("tab-btn-login").classList.add("active");
+        }
+      }
+
+      // Registro de usuario nuevo
       function handleAuthSubmit(e) {
         e.preventDefault();
         navigateToScreen(2);
+      }
+
+      // Login de emprendedor existente
+      function handleLoginSubmit(e) {
+        e.preventDefault();
+        const inputFolio = document.getElementById("login-folio").value.trim();
+
+        // Verifica si el folio ingresado coincide con el guardado en la memoria temporal (state)
+        if (state.folio !== "" && inputFolio === state.folio) {
+          // Si coincide, lo enviamos directo al panel de resultados (Pantalla 3)
+          switchView("entrepreneur");
+          navigateToScreen(3);
+        } else {
+          alert(
+            "Folio no encontrado. Para probar el prototipo, por favor realiza primero un 'Nuevo Registro', evalúa el proyecto y copia el folio generado.",
+          );
+        }
       }
 
       function handleEvalSubmit(e) {
@@ -958,6 +1096,27 @@
         } else {
           document.querySelectorAll(".view-btn")[1].classList.add("active");
           document.getElementById("view-committee").classList.add("active");
+
+          // Lógica exigida: Al cambiar de vista, debe haber un login para la vista del comité
+          document.getElementById("committee-login-box").style.display =
+            "block";
+          document.getElementById("committee-dashboard").style.display = "none";
+          document.getElementById("committee-password").value = "";
+        }
+      }
+
+      // Función de validación del login del comité
+      function doCommitteeLogin() {
+        const pass = document.getElementById("committee-password").value.trim();
+        if (pass !== "") {
+          // Si ingresa contraseña, oculta el login y muestra el dashboard
+          document.getElementById("committee-login-box").style.display = "none";
+          document.getElementById("committee-dashboard").style.display =
+            "block";
+        } else {
+          alert(
+            "Por favor ingrese su Clave de Funcionario para acceder al dictamen.",
+          );
         }
       }
 
@@ -975,7 +1134,9 @@
 
       function restartDemo() {
         document.getElementById("form-auth").reset();
+        document.getElementById("form-login").reset();
         document.getElementById("form-eval").reset();
+        switchAuthTab("register");
         switchView("entrepreneur");
         navigateToScreen(1);
       }
