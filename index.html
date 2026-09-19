@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IDEANDO GTO - Sistema de Postulación</title>
+    <style>
+      /* ==========================================================================
+           VARIABLES Y DISEÑO
+           ========================================================================== */
+      :root {
+        --gto-dark: #0f2f76;
+        --gto-light-blue: #4a8fe7;
+        --gto-accent: #ffd100;
+        --bg-color: #f4f6f9;
+        --text-dark: #1e293b;
+        --text-muted: #475569;
+        --success: #059669;
+        --warning: #d97706;
+        --danger: #dc2626;
+        --font-family: "Segoe UI", system-ui, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-family);
+        background-color: var(--bg-color);
+        color: var(--text-dark);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* BARRA SUPERIOR INSTITUCIONAL */
+      header {
+        background-color: var(--gto-dark);
+        color: #ffffff;
+        padding: 0.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-logos {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+      .header-logos img {
+        height: 50px;
+        object-fit: contain;
+      }
+
+      .header-text-links {
+        display: flex;
+        gap: 1.5rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+      .header-text-links span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      /* ESTRUCTURA PRINCIPAL DE 2 COLUMNAS */
+      main {
+        flex: 1;
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 1200px;
+        margin: 2rem auto;
+        width: 95%;
+        gap: 2rem;
+      }
+
+      /* COLUMNA IZQUIERDA: MARCA Y GUÍA DE USUARIO */
+      .left-column {
+        flex: 1;
+        min-width: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 1rem;
+      }
+
+      .logo-ideando {
+        max-width: 90%;
+        height: auto;
+        margin-bottom: 2rem;
+        filter: drop-shadow(0px 8px 6px rgba(0, 0, 0, 0.15));
+      }
+
+      .descripcion-box {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 2rem;
+        width: 100%;
+        border-top: 6px solid var(--gto-dark);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .descripcion-box h3 {
+        color: var(--gto-dark);
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 0.5rem;
+      }
+
+      .step-list {
+        list-style: none;
+        counter-reset: my-awesome-counter;
+        margin-top: 1.5rem;
+      }
+      .step-list li {
+        counter-increment: my-awesome-counter;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        position: relative;
+        padding-left: 2.5rem;
+        line-height: 1.4;
+      }
+      .step-list li::before {
+        content: counter(my-awesome-counter);
+        color: white;
+        background: var(--gto-dark);
+        font-weight: bold;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        position: absolute;
+        left: 0;
+        top: -2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+      }
+
+      /* COLUMNA DERECHA: CONTENEDOR DE REGISTRO */
+      .right-column {
+        flex: 1.5;
+        min-width: 350px;
+        background-color: var(--gto-light-blue);
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 25px rgba(15, 47, 118, 0.2);
+      }
+
+      .registro-header {
+        color: #ffffff;
+        text-align: center;
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 1.5rem;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+      }
+
+      /* TARJETAS INTERNAS (PANTALLAS INTERACTIVAS) */
+      .card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: none;
+        animation: fadeIn 0.4s ease;
+      }
+      .card.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* FORMULARIOS Y ELEMENTOS */
+      h2 {
+        color: var(--gto-dark);
+        margin-bottom: 0.5rem;
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 0.5rem;
+      }
+
+      .form-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+      }
+      @media (max-width: 700px) {
+        .form-grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+        text-align: left;
+      }
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        color: var(--gto-dark);
+      }
+
+      .helper-text {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 0.4rem;
+        margin-left: 0.5rem;
+        line-height: 1.3;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="tel"],
+      select {
+        width: 100%;
+        padding: 0.8rem 1.2rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        background-color: #f8fafc;
+        transition: all 0.2s;
+      }
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--gto-dark);
+        background-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(15, 47, 118, 0.15);
+      }
+
+      /* CONTENEDOR DEL DOCUMENTO LEGAL */
+      .doc-box {
+        background-color: #f0f7ff;
+        border: 2px dashed var(--gto-light-blue);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+      .doc-box h4 {
+        color: var(--gto-dark);
+        margin-bottom: 0.5rem;
+        font-size: 1.05rem;
+      }
+      .doc-box p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        line-height: 1.4;
+      }
+
+      .table-questions {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        margin-bottom: 2rem;
+      }
+      .table-questions th,
+      .table-questions td {
+        padding: 0.85rem;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 0.9rem;
+      }
+      .table-questions th {
+        color: var(--gto-dark);
+        text-align: left;
+      }
+      .radio-cell {
+        text-align: right;
+        min-width: 100px;
+      }
+      .radio-cell label {
+        display: inline-block;
+        margin-left: 10px;
+        cursor: pointer;
+        font-weight: 500;
+      }
+
+      /* BOTONES */
+      .btn {
+        display: inline-block;
+        padding: 0.85rem 1.5rem;
+        font-weight: bold;
+        border-radius: 10px;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+        text-align: center;
+        width: 100%;
+      }
+      .btn-primary {
+        background-color: var(--gto-dark);
+        color: #ffffff;
+      }
+      .btn-primary:hover {
+        background-color: #0b2259;
+        transform: translateY(-2px);
+      }
+      .btn-secondary {
+        background-color: #e2e8f0;
+        color: var(--gto-dark);
+      }
+      .btn-secondary:hover {
+        background-color: #cbd5e1;
+      }
+
+      .btn-success {
+        background-color: var(--success);
+        color: white;
+      }
+      .btn-warning {
+        background-color: var(--warning);
+        color: white;
+      }
+      .btn-danger {
+        background-color: var(--danger);
+        color: white;
+      }
+
+      /* RESULTADOS Y COMITÉ */
+      .view-toggle {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 0.75rem;
+        justify-content: center;
+      }
+      .view-btn {
+        background: none;
+        border: none;
+        font-weight: bold;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        color: var(--text-muted);
+        border-radius: 8px;
+        transition: 0.3s;
+      }
+      .view-btn.active {
+        background-color: var(--gto-dark);
+        color: #ffffff;
+      }
+      .view-panel {
+        display: none;
+      }
+      .view-panel.active {
+        display: block;
+      }
+
+      .score-pill {
+        font-size: 1.5rem;
+        font-weight: bold;
+        padding: 0.5rem 1.5rem;
+        border-radius: 30px;
+        color: white;
+        display: inline-block;
+      }
+      .badge-approved {
+        background-color: var(--success);
+      }
+      .badge-hold {
+        background-color: var(--warning);
+      }
+      .badge-rejected {
+        background-color: var(--danger);
+      }
+
+      .summary-list {
+        list-style: none;
+        margin-bottom: 1.5rem;
+      }
+      .summary-list li {
+        padding: 0.75rem 0;
+        border-bottom: 1px dashed #cbd5e1;
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.95rem;
+      }
+
+      .committee-actions-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+      .committee-actions-buttons .btn {
+        width: auto;
+        flex: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- CABECERA INSTITUCIONAL -->
+    <header>
+      <div class="header-logos">
+        <img src="imagenes/gente.png" alt="Guanajuato de la Gente" />
+      </div>
+      <div class="header-text-links">
+        <span>🚀 InnovaciónGto</span>
+        <span></span>
+      </div>
+    </header>
+
+    <main>
+      <!-- COLUMNA IZQUIERDA (GUÍA DE USUARIO) -->
+      <div class="left-column">
+        <img
+          src="imagenes/ideando.jpg"
+          alt="Ideando GTO"
+          class="logo-ideando"
+        />
+
+        <div class="descripcion-box">
+          <h3>¿Cómo funciona el proceso?</h3>
+          <p
+            style="
+              font-size: 0.9rem;
+              color: var(--text-muted);
+              margin-bottom: 0.5rem;
+            "
+          >
+            Bienvenido a <strong>IDEANDO GTO</strong>. A través de este portal
+            evaluamos la viabilidad y madurez operativa de tu modelo de negocio
+            de manera ágil.
+          </p>
+          <p style="font-size: 0.9rem; color: var(--text-muted)">
+            Por favor, sigue estos pasos guiados:
+          </p>
+
+          <ul class="step-list">
+            <li>
+              <strong>Identificación (Paso 1):</strong> Registra los datos
+              oficiales de contacto del líder del proyecto y el nombre comercial
+              registrado.
+            </li>
+            <li>
+              <strong>Parámetros Operativos (Paso 2):</strong> Indica tu
+              ubicación, adjunta tu expediente legal (comprobante fiscal) y
+              responde el cuestionario técnico de 10 preguntas.
+            </li>
+            <li>
+              <strong>Dictamen Automático (Paso 3):</strong> Nuestro sistema
+              algorítmico procesará tus respuestas y emitirá de forma inmediata
+              un pre-dictamen de tu proyecto.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- COLUMNA DERECHA (SISTEMA INTERACTIVO) -->
+      <div class="right-column">
+        <div class="registro-header">Panel de Postulación</div>
+
+        <!-- PANTALLA 1: BIENVENIDA E IDENTIFICACIÓN -->
+        <section id="screen-1" class="card active">
+          <h2 style="text-align: center">
+            Paso 1: Identificación del Solicitante
+          </h2>
+          <p
+            style="
+              text-align: center;
+              color: var(--text-muted);
+              font-size: 0.9rem;
+              margin-bottom: 2rem;
+            "
+          >
+            Ingresa la información básica para aperturar tu expediente.
+          </p>
+
+          <form id="form-auth" onsubmit="handleAuthSubmit(event)">
+            <div class="form-group">
+              <label>Nombre Completo del Emprendedor *</label>
+              <input
+                type="text"
+                id="lead-name"
+                required
+                placeholder="Ej. Ana Laura González"
+              />
+              <span class="helper-text"
+                >Debe ser el titular legal que firmará los convenios
+                gubernamentales.</span
+              >
+            </div>
+            <div class="form-group">
+              <label>Correo Electrónico Oficial *</label>
+              <input
+                type="email"
+                id="lead-email"
+                required
+                placeholder="contacto@miempresa.com"
+              />
+              <span class="helper-text"
+                >Se utilizará para notificar las resoluciones del comité
+                evaluador.</span
+              >
+            </div>
+            <div class="form-group">
+              <label>Nombre Comercial del Proyecto *</label>
+              <input
+                type="text"
+                id="project-name"
+                required
+                placeholder="Ej. BioAgro Solutions"
+              />
+              <span class="helper-text"
+                >El nombre con el que el producto o servicio es conocido en el
+                mercado.</span
+              >
+            </div>
+            <div style="margin-top: 2rem">
+              <button type="submit" class="btn btn-primary">
+                Guardar y Continuar al Paso 2 &rarr;
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- PANTALLA 2: PARÁMETROS OPERATIVOS Y DOCUMENTACIÓN -->
+        <section id="screen-2" class="card">
+          <h2>Paso 2: Parámetros y Validación Legal</h2>
+          <p
+            style="
+              color: var(--text-muted);
+              font-size: 0.9rem;
+              margin-bottom: 1.5rem;
+            "
+          >
+            Proporciona la evidencia que justifica la madurez de tu proyecto
+            para recibir apoyo.
+          </p>
+
+          <form id="form-eval" onsubmit="handleEvalSubmit(event)">
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label>Municipio de Operación *</label>
+                <select id="biz-city" required>
+                  <option value="">Seleccione el municipio...</option>
+                  <option value="León">León</option>
+                  <option value="Guanajuato">Guanajuato</option>
+                  <option value="Celaya">Celaya</option>
+                  <option value="Irapuato">Irapuato</option>
+                  <option value="Silao">Silao</option>
+                  <option value="Otro">Otro (GTO)</option>
+                </select>
+                <span class="helper-text"
+                  >Sede fiscal principal del negocio.</span
+                >
+              </div>
+              <div class="form-group">
+                <label>Tiempo en el Mercado *</label>
+                <select id="biz-time" required>
+                  <option value="">Seleccione el tiempo...</option>
+                  <option value="Fase de Idea">
+                    Solo es una idea (Sin operar)
+                  </option>
+                  <option value="Menos de 6 Meses">Menos de 6 Meses</option>
+                  <option value="6 a 12 Meses">De 6 a 12 Meses</option>
+                  <option value="Más de 1 Año">Más de 1 Año</option>
+                </select>
+                <span class="helper-text"
+                  >Tiempo desde su primera venta facturada.</span
+                >
+              </div>
+            </div>
+
+            <!-- DIV EXCLUSIVO PARA EXPLICACIÓN DE DOCUMENTO -->
+            <div class="doc-box">
+              <h4>Carga de Expediente Institucional (Documento Oficial) *</h4>
+              <p>
+                Para validar la existencia formal de su entidad frente a la
+                Secretaría de Finanzas, es <strong>obligatorio</strong> adjuntar
+                uno de los siguientes documentos en formato PDF: <br /><br />
+                <em
+                  >1. Opinión de Cumplimiento 32-D (SAT) en sentido positivo.<br />
+                  2. Acta Constitutiva (Para Personas Morales).<br />
+                  3. Constancia de Situación Fiscal reciente.</em
+                >
+              </p>
+              <p style="font-size: 0.8rem; color: var(--danger)">
+                <strong>Nota para el Prototipo:</strong> Para esta simulación,
+                seleccione cualquier archivo de su computadora para continuar.
+              </p>
+              <input
+                type="file"
+                id="audit-file"
+                accept=".pdf, .png, .jpg"
+                required
+              />
+            </div>
+
+            <h3
+              style="
+                color: var(--gto-dark);
+                font-size: 1.1rem;
+                margin-top: 1rem;
+              "
+            >
+              Cuestionario de Mentefactura
+            </h3>
+            <p
+              style="
+                font-size: 0.85rem;
+                color: var(--text-muted);
+                margin-bottom: 1rem;
+              "
+            >
+              Responda con honestidad. Las respuestas validarán automáticamente
+              el perfil del proyecto.
+            </p>
+
+            <table class="table-questions">
+              <tbody id="questions-container">
+                <!-- Generado dinámicamente con JS -->
+              </tbody>
+            </table>
+
+            <div class="form-grid-2">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                onclick="navigateToScreen(1)"
+              >
+                &larr; Volver
+              </button>
+              <button type="submit" class="btn btn-primary">
+                Generar Dictamen
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- PANTALLA 3: RESULTADOS (EMPRENDEDOR / COMITÉ) -->
+        <section id="screen-3" class="card">
+          <div class="view-toggle">
+            <button
+              class="view-btn active"
+              onclick="switchView('entrepreneur')"
+            >
+              Vista del Emprendedor
+            </button>
+            <button class="view-btn" onclick="switchView('committee')">
+              Vista del Comité
+            </button>
+          </div>
+
+          <!-- VISTA EMPRENDEDOR -->
+          <div
+            id="view-entrepreneur"
+            class="view-panel active"
+            style="text-align: center"
+          >
+            <h2>Resolución Automática</h2>
+            <p style="margin-bottom: 0.5rem">
+              Su solicitud ha sido procesada con el folio único:
+            </p>
+            <p style="margin-bottom: 1.5rem">
+              <strong
+                id="display-folio"
+                style="color: var(--gto-dark); font-size: 1.3rem"
+              ></strong>
+            </p>
+
+            <div id="display-status-badge" class="score-pill">En Espera</div>
+
+            <div
+              id="entrepreneur-feedback"
+              style="
+                margin: 1.5rem 0;
+                padding: 1.5rem;
+                background: #f8fafc;
+                border-radius: 8px;
+                border: 1px solid #e2e8f0;
+                text-align: left;
+              "
+            >
+              <!-- Retroalimentación dinámica (sin mostrar %) -->
+            </div>
+
+            <button class="btn btn-secondary" onclick="restartDemo()">
+              Comenzar Nueva Postulación
+            </button>
+          </div>
+
+          <!-- VISTA COMITÉ -->
+          <div id="view-committee" class="view-panel">
+            <h2>Ficha Técnica del Evaluador</h2>
+            <p
+              style="
+                color: var(--text-muted);
+                font-size: 0.85rem;
+                margin-bottom: 1rem;
+              "
+            >
+              Resumen estructurado para la toma de decisiones presupuestales.
+            </p>
+
+            <ul class="summary-list">
+              <li>
+                <span>Folio Asignado:</span> <strong id="sum-folio">-</strong>
+              </li>
+              <li>
+                <span>Proyecto a Evaluar:</span>
+                <strong id="sum-project">-</strong>
+              </li>
+              <li>
+                <span>Solicitante:</span> <strong id="sum-lead">-</strong>
+              </li>
+              <li>
+                <span>Municipio / Operación:</span>
+                <strong id="sum-city">-</strong>
+              </li>
+              <li>
+                <span>Puntaje Algorítmico:</span>
+                <strong id="sum-score">-</strong>
+              </li>
+              <li>
+                <span>Sugerencia del Sistema:</span>
+                <strong id="sum-recommendation">-</strong>
+              </li>
+            </ul>
+
+            <div
+              style="
+                margin-top: 2rem;
+                background: #f8fafc;
+                padding: 1rem;
+                border-radius: 8px;
+                border-left: 4px solid var(--gto-dark);
+              "
+            >
+              <label
+                style="
+                  display: block;
+                  text-align: left;
+                  font-weight: bold;
+                  margin-bottom: 10px;
+                "
+                >Resolución Final del Funcionario (Comité):</label
+              >
+              <div class="committee-actions-buttons">
+                <button
+                  class="btn btn-success"
+                  onclick="recordCommitteeDecision('Aprobado')"
+                >
+                  Aprobar Fondos
+                </button>
+                <button
+                  class="btn btn-warning"
+                  onclick="recordCommitteeDecision('En Espera')"
+                >
+                  Revisión Técnica
+                </button>
+                <button
+                  class="btn btn-danger"
+                  onclick="recordCommitteeDecision('Rechazado')"
+                >
+                  Rechazar
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      // Array de preguntas estratégicas
+      const validationQuestions = [
+        {
+          id: "q1",
+          text: "1. ¿La empresa está constituida con RFC en Guanajuato?",
+        },
+        {
+          id: "q2",
+          text: "2. ¿El modelo involucra base tecnológica o Mentefactura?",
+        },
+        {
+          id: "q3",
+          text: "3. ¿Cuenta con un Producto Mínimo Viable (MVP) testeado?",
+        },
+        {
+          id: "q4",
+          text: "4. ¿Ha registrado ventas formales en los últimos 6 meses?",
+        },
+        {
+          id: "q5",
+          text: "5. ¿Tiene trámites de protección intelectual ante el IMPI?",
+        },
+        {
+          id: "q6",
+          text: "6. ¿Tiene estructura de costos y margen de ganancia positivo?",
+        },
+        {
+          id: "q7",
+          text: "7. ¿El equipo fundador tiene dedicación de tiempo completo?",
+        },
+        {
+          id: "q8",
+          text: "8. ¿El proyecto creará empleos formales a corto plazo?",
+        },
+        {
+          id: "q9",
+          text: "9. ¿Cuenta con cuenta bancaria a nombre del negocio?",
+        },
+        {
+          id: "q10",
+          text: "10. ¿Tiene Opinión de Cumplimiento 32-D Positiva ante el SAT?",
+        },
+      ];
+
+      let state = { score: 0, percentage: 0, verdict: "", folio: "" };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const container = document.getElementById("questions-container");
+        validationQuestions.forEach((item) => {
+          container.innerHTML += `
+                    <tr>
+                        <td>${item.text}</td>
+                        <td class="radio-cell">
+                            <!-- Se quitó el atributo 'checked' de la opción 'No' -->
+                            <label><input type="radio" name="${item.id}" value="yes"> Sí</label>
+                            <label><input type="radio" name="${item.id}" value="no"> No</label>
+                        </td>
+                    </tr>`;
+        });
+      });
+
+      function navigateToScreen(n) {
+        document
+          .querySelectorAll(".card")
+          .forEach((c) => c.classList.remove("active"));
+        document.getElementById(`screen-${n}`).classList.add("active");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function handleAuthSubmit(e) {
+        e.preventDefault();
+        navigateToScreen(2);
+      }
+
+      function handleEvalSubmit(e) {
+        e.preventDefault();
+        let yesCount = 0;
+        let answeredCount = 0;
+
+        // Validar que TODAS las preguntas estén contestadas
+        validationQuestions.forEach((q) => {
+          let selectedOption = document.querySelector(
+            `input[name="${q.id}"]:checked`,
+          );
+          if (selectedOption) {
+            answeredCount++;
+            if (selectedOption.value === "yes") {
+              yesCount++;
+            }
+          }
+        });
+
+        // Alerta personalizada si faltan preguntas por responder
+        if (answeredCount < validationQuestions.length) {
+          alert(
+            "Por favor, responde todas las preguntas del cuestionario antes de generar el dictamen.",
+          );
+          return;
+        }
+
+        // Validar tiempo en el mercado (+1 punto si es "Más de 1 Año")
+        let bizTime = document.getElementById("biz-time").value;
+        let extraPoint = bizTime === "Más de 1 Año" ? 1 : 0;
+
+        // El score total es en base a 11 (10 preguntas + 1 del tiempo operativo)
+        state.score = yesCount + extraPoint;
+        state.percentage = Math.round((state.score / 11) * 100);
+
+        if (state.percentage >= 80) state.verdict = "Aprobado";
+        else if (state.percentage >= 60) state.verdict = "En Espera";
+        else state.verdict = "Rechazado";
+
+        state.folio = `IDEANDO-26-${Math.floor(1000 + Math.random() * 9000)}`;
+
+        renderScreen3();
+        navigateToScreen(3);
+      }
+
+      function renderScreen3() {
+        // --- LLENAR VISTA EMPRENDEDOR ---
+        document.getElementById("display-folio").textContent = state.folio;
+        const badge = document.getElementById("display-status-badge");
+
+        // El emprendedor ya NO ve el porcentaje, solo el veredicto
+        badge.textContent = state.verdict;
+        badge.className =
+          "score-pill " +
+          (state.verdict === "Aprobado"
+            ? "badge-approved"
+            : state.verdict === "En Espera"
+              ? "badge-hold"
+              : "badge-rejected");
+
+        const feedback = document.getElementById("entrepreneur-feedback");
+
+        // Textos adaptados para no revelar porcentajes al usuario
+        if (state.verdict === "Aprobado") {
+          feedback.innerHTML = `<h4 style="color:var(--success); margin-bottom:5px;">¡Felicidades!</h4><p style="font-size:0.9rem; color:var(--text-muted);">Tu proyecto cumple satisfactoriamente con los requerimientos operativos y tecnológicos. Estás listo para pasar a la fase de vinculación con los evaluadores de IDEANDO GTO.</p>`;
+        } else if (state.verdict === "En Espera") {
+          feedback.innerHTML = `<h4 style="color:var(--warning); margin-bottom:5px;">Requiere Análisis Humano</h4><p style="font-size:0.9rem; color:var(--text-muted);">Tu proyecto cuenta con bases sólidas, sin embargo, el expediente pasará a revisión manual detallada por el Comité Evaluador.</p>`;
+        } else {
+          feedback.innerHTML = `<h4 style="color:var(--danger); margin-bottom:5px;">No Elegible por el momento</h4><p style="font-size:0.9rem; color:var(--text-muted);">En este momento el proyecto no cuenta con la madurez operativa requerida para esta convocatoria. Te invitamos a fortalecerlo en los próximos talleres de aceleración de IDEA GTO.</p>`;
+        }
+
+        // --- LLENAR VISTA COMITÉ ---
+        document.getElementById("sum-folio").textContent = state.folio;
+        document.getElementById("sum-project").textContent =
+          document.getElementById("project-name").value;
+        document.getElementById("sum-lead").textContent =
+          document.getElementById("lead-name").value;
+        document.getElementById("sum-city").textContent =
+          document.getElementById("biz-city").value;
+
+        // El comité SÍ ve los aciertos sobre 11 y el porcentaje
+        document.getElementById("sum-score").textContent =
+          `${state.score} Aciertos de 11 (${state.percentage}%)`;
+        document.getElementById("sum-recommendation").textContent =
+          state.verdict;
+      }
+
+      function switchView(view) {
+        document
+          .querySelectorAll(".view-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document
+          .querySelectorAll(".view-panel")
+          .forEach((p) => p.classList.remove("active"));
+
+        if (view === "entrepreneur") {
+          document.querySelectorAll(".view-btn")[0].classList.add("active");
+          document.getElementById("view-entrepreneur").classList.add("active");
+        } else {
+          document.querySelectorAll(".view-btn")[1].classList.add("active");
+          document.getElementById("view-committee").classList.add("active");
+        }
+      }
+
+      function recordCommitteeDecision(decision) {
+        // Al hacer click, el estado cambia globalmente
+        state.verdict = decision;
+
+        // Se vuelve a renderizar para que la Vista del Emprendedor se actualice en tiempo real
+        renderScreen3();
+
+        alert(
+          `Acción Oficial Registrada:\n\nEl expediente con folio ${state.folio} ha sido modificado a: ${decision.toUpperCase()}.\n\nEl estatus ha sido actualizado correctamente en el panel del usuario emprendedor.`,
+        );
+      }
+
+      function restartDemo() {
+        document.getElementById("form-auth").reset();
+        document.getElementById("form-eval").reset();
+        switchView("entrepreneur");
+        navigateToScreen(1);
+      }
+    </script>
+  </body>
+</html>
