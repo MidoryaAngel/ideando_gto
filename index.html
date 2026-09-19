@@ -201,8 +201,14 @@
         grid-template-columns: 1fr 1fr;
         gap: 1.5rem;
       }
+      .form-grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1.5rem;
+      }
       @media (max-width: 700px) {
-        .form-grid-2 {
+        .form-grid-2,
+        .form-grid-3 {
           grid-template-columns: 1fr;
         }
       }
@@ -456,8 +462,8 @@
             </li>
             <li>
               <strong>Parámetros Operativos (Paso 2):</strong> Indica tu
-              ubicación, adjunta tu expediente legal (comprobante fiscal) y
-              responde el cuestionario técnico de 10 preguntas.
+              ubicación, giro de sector, adjunta tu expediente legal y responde
+              el cuestionario de 10 preguntas.
             </li>
             <li>
               <strong>Dictamen Automático (Paso 3):</strong> Nuestro sistema
@@ -608,11 +614,12 @@
           </p>
 
           <form id="form-eval" onsubmit="handleEvalSubmit(event)">
-            <div class="form-grid-2">
+            <div class="form-grid-3">
+              <!-- ORDEN 1: CIUDAD -->
               <div class="form-group">
-                <label>Municipio de Operación *</label>
+                <label>Municipio *</label>
                 <select id="biz-city" required>
-                  <option value="">Seleccione el municipio...</option>
+                  <option value="">Seleccione...</option>
                   <option value="León">León</option>
                   <option value="Guanajuato">Guanajuato</option>
                   <option value="Celaya">Celaya</option>
@@ -624,20 +631,48 @@
                   >Sede fiscal principal del negocio.</span
                 >
               </div>
+
+              <!-- ORDEN 2: GIRO / SECTOR -->
               <div class="form-group">
-                <label>Tiempo en el Mercado *</label>
-                <select id="biz-time" required>
-                  <option value="">Seleccione el tiempo...</option>
-                  <option value="Fase de Idea">
-                    Solo es una idea (Sin operar)
+                <label>Giro / Sector *</label>
+                <select id="biz-sector" required>
+                  <option value="">Seleccione sector...</option>
+                  <option value="Tecnologías de Información y Software">
+                    Tecnologías de Información y Software
                   </option>
-                  <option value="Menos de 6 Meses">Menos de 6 Meses</option>
-                  <option value="6 a 12 Meses">De 6 a 12 Meses</option>
-                  <option value="Más de 1 Año">Más de 1 Año</option>
+                  <option value="Agroalimentos y Biotecnología">
+                    Agroalimentos y Biotecnología
+                  </option>
+                  <option value="Automotriz y Movilidad Eléctrica">
+                    Automotriz y Movilidad Eléctrica
+                  </option>
+                  <option value="Cuero, Calzado y Moda Digital">
+                    Cuero, Calzado y Moda Digital
+                  </option>
+                  <option value="Comercio Electrónico y Logística">
+                    Comercio Electrónico y Logística
+                  </option>
+                  <option value="Salud y Dispositivos Médicos">
+                    Salud y Dispositivos Médicos
+                  </option>
+                  <option value="Otro">Otro</option>
                 </select>
                 <span class="helper-text"
-                  >Tiempo desde su primera venta facturada.</span
+                  >Clúster principal de tu negocio.</span
                 >
+              </div>
+
+              <!-- ORDEN 3: TIEMPO EN EL MERCADO -->
+              <div class="form-group">
+                <label>Tiempo Operando *</label>
+                <select id="biz-time" required>
+                  <option value="">Seleccione el tiempo...</option>
+                  <option value="Fase de Idea">Solo Idea</option>
+                  <option value="Menos de 6 Meses">Menor a 6 Meses</option>
+                  <option value="6 a 12 Meses">6 a 12 Meses</option>
+                  <option value="Más de 1 Año">Mayor a 1 Año</option>
+                </select>
+                <span class="helper-text">Desde su primera venta formal.</span>
               </div>
             </div>
 
@@ -755,7 +790,7 @@
             </div>
 
             <button class="btn btn-secondary" onclick="restartDemo()">
-              Cerrar Sesión / Nuevo Registro
+              Cerrar Sesión / Volver al Inicio
             </button>
           </div>
 
@@ -830,6 +865,10 @@
                 <li>
                   <span>Municipio / Operación:</span>
                   <strong id="sum-city">-</strong>
+                </li>
+                <li>
+                  <span>Giro / Sector:</span>
+                  <strong id="sum-sector">-</strong>
                 </li>
                 <li>
                   <span>Puntaje Algorítmico:</span>
@@ -1074,6 +1113,8 @@
           document.getElementById("lead-name").value;
         document.getElementById("sum-city").textContent =
           document.getElementById("biz-city").value;
+        document.getElementById("sum-sector").textContent =
+          document.getElementById("biz-sector").value;
 
         // El comité SÍ ve los aciertos sobre 11 y el porcentaje
         document.getElementById("sum-score").textContent =
